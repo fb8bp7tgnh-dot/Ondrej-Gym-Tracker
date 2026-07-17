@@ -1,65 +1,110 @@
 
-import { useState } from 'react'
+import {useEffect, useState} from 'react'
 
-const plans={
-'FB-A':['Flat Chest Press','Incline Chest Press','Lat Pulldown','Romanian Deadlift'],
-'FB-B':['Viking Press','Chest Supported Row','Cable Fly','Leg Press'],
-'FB-C':['Flat Chest Press','Pull Up','Peck Deck','Trap Bar Deadlift']
+const plans = {
+  'FB-A':['Flat Chest Press','Incline Chest Press','Lat Pulldown','Romanian Deadlift'],
+  'FB-B':['Viking Press','Chest Supported Row','Cable Fly','Leg Press'],
+  'FB-C':['Flat Chest Press','Pull Up','Peck Deck','Trap Bar Deadlift']
 }
 
+const emptyRow = {kg:'',s1:'',s2:'',s3:'',s4:''}
+
 export default function App(){
- const [plan,setPlan]=useState('FB-A')
- const [fatigue,setFatigue]=useState(3)
+  const [plan,setPlan] = useState(localStorage.getItem('plan') || 'FB-A')
+  const [screen,setScreen] = useState('home')
+  const [sleep,setSleep] = useState(localStorage.getItem('sleep') || '')
+  const [fatigue,setFatigue] = useState(Number(localStorage.getItem('fatigue') || 3))
+  const [data,setData] = useState(JSON.parse(localStorage.getItem('workoutData') || '{}'))
 
- const cards=[['💪 Síla','+2.8%'],['⚖️ Váha','86kg'],['😴 Spánek','7.3h'],['❤️ Recovery','82']]
- return (
- <div style={{maxWidth:800,margin:'auto',padding:16,fontFamily:'Arial'}}>
-   <h1>Ondřej Gym Tracker v0.9</h1>
+  useEffect(()=>localStorage.setItem('workoutData', JSON.stringify(data)), [data])
+  useEffect(()=>localStorage.setItem('sleep', sleep), [sleep])
+  useEffect(()=>localStorage.setItem('fatigue', fatigue), [fatigue])
+  useEffect(()=>localStorage.setItem('plan', plan), [plan])
 
-   <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:12}}>
-     {cards.map(c=><div key={c[0]} style={{border:'1px solid #ddd',borderRadius:16,padding:16,cursor:'pointer'}}>
-       <div>{c[0]}</div><h2>{c[1]}</h2>
-     </div>)}
-   </div>
+  const updateExercise = (exercise, field, value) => {
+    setData(prev => ({
+      ...prev,
+      [exercise]: {
+        ...(prev[exercise] || emptyRow),
+        [field]: value
+      }
+    }))
+  }
 
-   <h2 style={{marginTop:24}}>Dnešní trénink</h2>
+  const volume = (row) => {
+    if(!row || !row.kg) return 0
+    const reps = ['s1','s2','s3','s4'].reduce((a,k)=>a+(Number(row[k])||0),0)
+    return (Number(row.kg)||0) * reps
+  }
 
-   <select value={plan} onChange={e=>setPlan(e.target.value)}>
-    <option>FB-A</option><option>FB-B</option><option>FB-C</option>
-   </select>
+  const totalVolume = Object.values(data).reduce((a,row)=>a+volume(row),0)
 
-   <table style={{width:'100%',marginTop:12}}>
-    <thead>
-     <tr><th>Cvik</th><th>Kg</th><th>S1</th><th>S2</th><th>S3</th><th>S4</th></tr>
-    </thead>
-    <tbody>
-    {plans[plan].map(ex=>(
-      <tr key={ex}>
-       <td>{ex}</td>
-       <td><input style={{width:'55px'}}/></td>
-       <td><input style={{width:'45px'}}/></td>
-       <td><input style={{width:'45px'}}/></td>
-       <td><input style={{width:'45px'}}/></td>
-       <td><input style={{width:'45px'}}/></td>
-      </tr>
-    ))}
-    </tbody>
-   </table>
+  if(screen === 'recovery'){
+    return (
+      <div style={{maxWidth:800,margin:'0 auto',padding:16,fontFamily:'Arial'}}>
+        <button onClick={()=>setScreen('home')}>← Zpět</button>
+        <h2>Recovery</h2>
+        <p>Spánek (h)</p>
+        <input value={sleep} onChange={e=>setSleep(e.target.value)} />
+        <p>Únava</p>
+        <div style={{display:'flex',gap:10}}>
+          {[1,2,3,4,5].map(v=>(
+            <button key={v}
+              onClick={()=>setFatigue(v)}
+              style={{
+                width:55,height:55,borderRadius:14,
+                border: fatigue===v ? '3px solid black':'1px solid #ccc'
+              }}>{v}</button>
+          ))}
+        </div>
+      </div>
+    )
+  }
 
-   <h2 style={{marginTop:24}}>Recovery</h2>
-   <div style={{display:'flex',gap:10}}>
-   {[1,2,3,4,5].map(v=>(
-    <button key={v}
-      onClick={()=>setFatigue(v)}
-      style={{
-       width:50,height:50,borderRadius:12,
-       border: fatigue===v ? '3px solid black':'1px solid #ccc'
-      }}>
-      {v}
-    </button>
-   ))}
-   </div>
+  return (
+    <div style={{maxWidth:900,margin:'0 auto',padding:16,fontFamily:'Arial'}}>
+      <h1>💪 Ondřej Gym Tracker v1.0</h1>
 
-   <p>Vybraná únava: {fatigue}/5</p>
- </div>)
+      <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:12}}>
+        <div style={{border:'1px solid #ddd',borderRadius:16,padding:16}}>💪 Síla<br/><b>{totalVolume} kg</b></div>
+        <div style={{border:'1px solid #ddd',borderRadius:16,padding:16}}>⚖️ Váha<br/><b>86 kg</b></div>
+        <div style={{border:'1px solid #ddd',borderRadius:16,padding:16}}>😴 Spánek<br/><b>{sleep || '-'} h</b></div>
+        <div onClick={()=>setScreen('recovery')} style={{border:'1px solid #ddd',borderRadius:16,padding:16,cursor:'pointer'}}>❤️ Recovery<br/><b>{fatigue}/5</b></div>
+      </div>
+
+      <h2>Dnešní trénink</h2>
+
+      <select value={plan} onChange={e=>setPlan(e.target.value)}>
+        {Object.keys(plans).map(p=><option key={p}>{p}</option>)}
+      </select>
+
+      <table style={{width:'100%',marginTop:12}}>
+        <thead>
+          <tr>
+            <th>Cvik</th><th>Kg</th><th>S1</th><th>S2</th><th>S3</th><th>S4</th><th>Objem</th>
+          </tr>
+        </thead>
+        <tbody>
+          {plans[plan].map(ex=>{
+            const row = data[ex] || emptyRow
+            return (
+              <tr key={ex}>
+                <td>{ex}</td>
+                {['kg','s1','s2','s3','s4'].map(field=>(
+                  <td key={field}>
+                    <input
+                      value={row[field] || ''}
+                      onChange={e=>updateExercise(ex, field, e.target.value)}
+                      style={{width:'55px'}}
+                    />
+                  </td>
+                ))}
+                <td><b>{volume(row)}</b></td>
+              </tr>
+            )
+          })}
+        </tbody>
+      </table>
+    </div>
+  )
 }
