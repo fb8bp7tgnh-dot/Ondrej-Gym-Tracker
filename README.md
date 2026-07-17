@@ -1,5 +1,5 @@
 
-# Ondřej Gym Tracker v0.3
+# Ondřej Gym Tracker v0.4
 
 Obsahuje:
 - mobilní dashboard
