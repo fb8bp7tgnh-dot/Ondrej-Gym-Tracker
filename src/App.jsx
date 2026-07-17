@@ -1,41 +1,30 @@
 
+import {useState} from 'react';
+const plans={
+"A":["Hack Squat","Flat Chest Press","Incline Chest Press","Lat Pulldown","Romanian Deadlift","Lateral Raise","Biceps Curl","Triceps Pushdown"],
+"B":["Leg Press","Incline Chest Press","Chest Supported Row","Leg Curl","Viking Press","Cable Fly","Hammer Curl","Overhead Triceps Extension"],
+"C":["Trap Bar Deadlift","Flat Chest Press","Incline Chest Press","Pull-Up","Peck Deck","Lateral Raise","Preacher Curl","Triceps Pushdown"]
+}
 export default function App(){
-  const cards=[
-    ['💪 Síla','+2.8 %'],
-    ['⚖️ Váha','-0.5 %'],
-    ['😴 Spánek','+8.1 %'],
-    ['🔥 Konzistence','100 %'],
-    ['🏆 PR','3'],
-    ['❤️ Recovery','82/100']
-  ];
-  return (
-    <div style={{fontFamily:'Arial',padding:20,maxWidth:500,margin:'auto'}}>
-      <h1>Ondřej Gym Tracker</h1>
-      <p>Mobilní prototyp v0.3</p>
-
-      <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:12}}>
-        {cards.map(c=>(
-          <div key={c[0]} style={{border:'1px solid #ddd',borderRadius:16,padding:14}}>
-            <div>{c[0]}</div>
-            <div style={{fontSize:24,fontWeight:'bold'}}>{c[1]}</div>
-          </div>
-        ))}
-      </div>
-
-      <h2 style={{marginTop:24}}>Dnešní trénink</h2>
-      <div style={{border:'1px solid #ddd',borderRadius:16,padding:14}}>
-        <h3>FB-A</h3>
-        <table width="100%">
-          <thead>
-            <tr><th>Cvik</th><th>Posledně</th></tr>
-          </thead>
-          <tbody>
-            <tr><td>Flat Press</td><td>80 × 8/8/7/6</td></tr>
-            <tr><td>Viking Press</td><td>30 × 8/7/6</td></tr>
-            <tr><td>Lat Pulldown</td><td>75 × 10/10/9</td></tr>
-          </tbody>
-        </table>
-      </div>
-    </div>
-  )
+ const [tab,setTab]=useState("dashboard");
+ const [plan,setPlan]=useState("A");
+ const cards=[["💪 Síla","+2.8%"],["⚖️ Váha","86kg"],["😴 Spánek","7.4h"],["❤️ Recovery","82"]];
+ return <div style={{fontFamily:"Arial",maxWidth:600,margin:"auto",padding:12}}>
+ <h2>Ondřej Gym Tracker v0.7</h2>
+ <div style={{display:"flex",gap:8,marginBottom:12}}>
+ {["dashboard","training","recovery"].map(t=><button key={t} onClick={()=>setTab(t)}>{t}</button>)}
+ </div>
+ {tab==="dashboard" && <div style={{display:"grid",gridTemplateColumns":"1fr 1fr",gap:10}}>
+ {cards.map(c=><div key={c[0]} style={{border:"1px solid #ddd",borderRadius:12,padding:12}}><div>{c[0]}</div><h3>{c[1]}</h3></div>)}
+ </div>}
+ {tab==="training" && <div>
+ <select value={plan} onChange={e=>setPlan(e.target.value)}>
+ <option value="A">FB-A</option><option value="B">FB-B</option><option value="C">FB-C</option>
+ </select>
+ <table width="100%" border="1" style={{marginTop:10}}>
+ <thead><tr><th>Cvik</th><th>Posledně</th><th>Dnes</th></tr></thead>
+ <tbody>{plans[plan].map(ex=><tr key={ex}><td>{ex}</td><td>--</td><td><input placeholder="váha/op."/></td></tr>)}</tbody>
+ </table></div>}
+ {tab==="recovery" && <div><input placeholder="Spánek (h)"/><br/><select><option>Únava 1</option><option>Únava 2</option><option>Únava 3</option><option>Únava 4</option><option>Únava 5</option></select></div>}
+ </div>
 }
