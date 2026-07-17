@@ -1,0 +1,11 @@
+Ondrej Gym Tracker v2.1 targets
+
+Planned additions:
+- Charts after clicking dashboard tiles
+- Weekly and monthly trends
+- Backup import
+- PR notifications
+- Bodyweight chart
+- Workout count statistics
+- Recovery hidden behind recovery tile
+- Return of workout progress delta %
