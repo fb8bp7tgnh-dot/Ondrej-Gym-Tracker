@@ -1,12 +1,15 @@
+Ondrej Gym Tracker v0.5 blueprint
 
-# Ondřej Gym Tracker v0.4
+Dashboard cards:
+- Strength
+- Weight
+- Sleep
+- Recovery
+- Consistency
+- PR
 
-Obsahuje:
-- mobilní dashboard
-- základní architekturu React + Vite
-- připravený základ pro FB-A/B/C
-- připravené k rozšíření o IndexedDB a PWA
+Training plans:
+FB-A, FB-B, FB-C
 
-Deploy:
-npm install
-npm run build
+Goal:
+automatic loading of previous weights and reps.

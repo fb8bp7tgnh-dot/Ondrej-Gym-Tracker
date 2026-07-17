@@ -1,0 +1,32 @@
+{
+  "FB-A": [
+    "Hack Squat",
+    "Flat Chest Press",
+    "Incline Chest Press",
+    "Lat Pulldown",
+    "Romanian Deadlift",
+    "Lateral Raise",
+    "Biceps Curl",
+    "Triceps Pushdown"
+  ],
+  "FB-B": [
+    "Leg Press",
+    "Incline Chest Press",
+    "Chest Supported Row",
+    "Leg Curl",
+    "Viking Press",
+    "Cable Fly",
+    "Hammer Curl",
+    "Overhead Triceps Extension"
+  ],
+  "FB-C": [
+    "Trap Bar Deadlift",
+    "Flat Chest Press",
+    "Incline Chest Press",
+    "Pull-Up",
+    "Peck Deck",
+    "Lateral Raise",
+    "Preacher Curl",
+    "Triceps Pushdown"
+  ]
+}
