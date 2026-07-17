@@ -1,66 +1,65 @@
 
-import {useState,useEffect} from 'react'
+import { useState } from 'react'
 
 const plans={
-'FB-A':['Hack Squat','Flat Chest Press','Incline Chest Press','Lat Pulldown'],
-'FB-B':['Leg Press','Chest Supported Row','Viking Press','Cable Fly'],
-'FB-C':['Trap Bar Deadlift','Flat Chest Press','Pull-Up','Peck Deck']
+'FB-A':['Flat Chest Press','Incline Chest Press','Lat Pulldown','Romanian Deadlift'],
+'FB-B':['Viking Press','Chest Supported Row','Cable Fly','Leg Press'],
+'FB-C':['Flat Chest Press','Pull Up','Peck Deck','Trap Bar Deadlift']
 }
 
 export default function App(){
- const [tab,setTab]=useState('dashboard')
  const [plan,setPlan]=useState('FB-A')
- const today=new Date().toLocaleDateString('cs-CZ')
- const [sleep,setSleep]=useState(localStorage.getItem('sleep')||'')
- const [fatigue,setFatigue]=useState(localStorage.getItem('fatigue')||'3')
- const [history,setHistory]=useState(JSON.parse(localStorage.getItem('history')||'{}'))
+ const [fatigue,setFatigue]=useState(3)
 
- useEffect(()=>localStorage.setItem('sleep',sleep),[sleep])
- useEffect(()=>localStorage.setItem('fatigue',fatigue),[fatigue])
- useEffect(()=>localStorage.setItem('history',JSON.stringify(history)),[history])
+ const cards=[['💪 Síla','+2.8%'],['⚖️ Váha','86kg'],['😴 Spánek','7.3h'],['❤️ Recovery','82']]
+ return (
+ <div style={{maxWidth:800,margin:'auto',padding:16,fontFamily:'Arial'}}>
+   <h1>Ondřej Gym Tracker v0.9</h1>
 
- const saveExercise=(ex,val)=>{
-   setHistory(prev=>({...prev,[ex]:val}))
- }
+   <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:12}}>
+     {cards.map(c=><div key={c[0]} style={{border:'1px solid #ddd',borderRadius:16,padding:16,cursor:'pointer'}}>
+       <div>{c[0]}</div><h2>{c[1]}</h2>
+     </div>)}
+   </div>
 
- return <div style={{maxWidth:700,margin:'auto',padding:16,fontFamily:'Arial'}}>
- <h1>💪 Ondřej Gym Tracker v0.8</h1>
- <div>{today}</div>
+   <h2 style={{marginTop:24}}>Dnešní trénink</h2>
 
- <div style={{display:'flex',gap:8,margin:'12px 0'}}>
- {['dashboard','training','recovery'].map(t=><button key={t} onClick={()=>setTab(t)}>{t}</button>)}
- </div>
+   <select value={plan} onChange={e=>setPlan(e.target.value)}>
+    <option>FB-A</option><option>FB-B</option><option>FB-C</option>
+   </select>
 
- {tab==='dashboard' && <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:10}}>
- {['Síla','Váha','Spánek','Recovery'].map(c=>
- <div key={c} style={{border:'1px solid #ddd',borderRadius:14,padding:18,cursor:'pointer'}}>
- <h3>{c}</h3><div>Klikni pro historii (v0.9)</div></div>)}
- </div>}
+   <table style={{width:'100%',marginTop:12}}>
+    <thead>
+     <tr><th>Cvik</th><th>Kg</th><th>S1</th><th>S2</th><th>S3</th><th>S4</th></tr>
+    </thead>
+    <tbody>
+    {plans[plan].map(ex=>(
+      <tr key={ex}>
+       <td>{ex}</td>
+       <td><input style={{width:'55px'}}/></td>
+       <td><input style={{width:'45px'}}/></td>
+       <td><input style={{width:'45px'}}/></td>
+       <td><input style={{width:'45px'}}/></td>
+       <td><input style={{width:'45px'}}/></td>
+      </tr>
+    ))}
+    </tbody>
+   </table>
 
- {tab==='training' && <div>
- <select value={plan} onChange={e=>setPlan(e.target.value)}>
- {Object.keys(plans).map(p=><option key={p}>{p}</option>)}
- </select>
- <table style={{width:'100%',marginTop:10}}>
- <thead><tr><th>Cvik</th><th>Posledně</th><th>Dnes</th></tr></thead>
- <tbody>
- {plans[plan].map(ex=><tr key={ex}>
- <td>{ex}</td>
- <td>{history[ex]||'--'}</td>
- <td><input defaultValue={history[ex]||''} onBlur={e=>saveExercise(ex,e.target.value)} placeholder='80x8x8x7'/></td>
- </tr>)}
- </tbody>
- </table>
- </div>}
+   <h2 style={{marginTop:24}}>Recovery</h2>
+   <div style={{display:'flex',gap:10}}>
+   {[1,2,3,4,5].map(v=>(
+    <button key={v}
+      onClick={()=>setFatigue(v)}
+      style={{
+       width:50,height:50,borderRadius:12,
+       border: fatigue===v ? '3px solid black':'1px solid #ccc'
+      }}>
+      {v}
+    </button>
+   ))}
+   </div>
 
- {tab==='recovery' && <div>
- <p>Spánek (h)</p>
- <input value={sleep} onChange={e=>setSleep(e.target.value)}/>
- <p>Únava 1-5</p>
- <select value={fatigue} onChange={e=>setFatigue(e.target.value)}>
- {[1,2,3,4,5].map(v=><option key={v}>{v}</option>)}
- </select>
- <h3>Recovery score: {Math.max(0,100-(fatigue*10)+(sleep*5||0))}/100</h3>
- </div>}
- </div>
+   <p>Vybraná únava: {fatigue}/5</p>
+ </div>)
 }
